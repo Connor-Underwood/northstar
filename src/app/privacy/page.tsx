@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <h2>2. Data we collect</h2>
         <ul>
           <li>
-            <strong>Authentication data</strong> (managed by Clerk): email
+            <strong>Authentication data</strong> (managed by Auth0): email
             address and authentication metadata.
           </li>
           <li>
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
         <p>The app uses these service providers, each with their own privacy policy:</p>
         <ul>
           <li>Plaid — for bank/investment data aggregation</li>
-          <li>Clerk — for authentication</li>
+          <li>Auth0 — for authentication</li>
           <li>Neon — for database hosting</li>
           <li>Vercel — for application hosting</li>
         </ul>
