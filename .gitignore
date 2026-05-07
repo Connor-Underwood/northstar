@@ -45,3 +45,4 @@ google-documents/
 GOALS.md
 private/
 *.local
+.env*.local
