@@ -25,17 +25,34 @@ export function ConnectBankButton() {
     onSuccess: async (publicToken) => {
       setError(null);
       startTransition(async () => {
-        const ex = await fetch("/api/plaid/exchange", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ public_token: publicToken }),
-        });
-        if (!ex.ok) {
-          setError("Token exchange failed.");
-          return;
+        try {
+          const ex = await fetch("/api/plaid/exchange", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ public_token: publicToken }),
+          });
+          const exData = await ex.json().catch(() => ({}));
+          if (!ex.ok) {
+            console.error("[connect-bank] exchange failed", ex.status, exData);
+            setError(
+              `Exchange failed (${ex.status}): ${exData?.message ?? exData?.error ?? "see console"}`,
+            );
+            return;
+          }
+          console.log("[connect-bank] exchange ok", exData);
+          const sync = await fetch("/api/plaid/sync", { method: "POST" });
+          const syncData = await sync.json().catch(() => ({}));
+          if (!sync.ok) {
+            console.error("[connect-bank] sync failed", sync.status, syncData);
+            setError(`Sync failed (${sync.status}): ${syncData?.message ?? "see console"}`);
+            return;
+          }
+          console.log("[connect-bank] sync ok", syncData);
+          router.refresh();
+        } catch (e) {
+          console.error("[connect-bank] unexpected", e);
+          setError(`Unexpected: ${(e as Error).message}`);
         }
-        await fetch("/api/plaid/sync", { method: "POST" });
-        router.refresh();
       });
     },
     onExit: (err) => {
