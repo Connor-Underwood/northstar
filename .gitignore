@@ -46,3 +46,4 @@ GOALS.md
 private/
 *.local
 .env*.local
+*.pdf
