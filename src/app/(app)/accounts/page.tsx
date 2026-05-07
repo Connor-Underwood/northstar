@@ -4,6 +4,7 @@ import { db, s } from "@/db";
 import { eq, asc } from "drizzle-orm";
 import { ConnectBankButton } from "./connect-bank";
 import { SyncButton } from "./sync-button";
+import { SeedAccountsButton } from "./seed-button";
 import { ACCOUNT_TYPES } from "@/lib/account-utils";
 
 const TYPE_LABELS = Object.fromEntries(
@@ -50,8 +51,12 @@ export default async function AccountsPage() {
 
       <div className="mt-8 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         {rows.length === 0 ? (
-          <div className="p-8 text-center text-sm text-zinc-500">
-            No accounts yet.
+          <div className="p-8 text-center">
+            <p className="text-sm text-zinc-500 mb-4">
+              No accounts yet. Seed from GOALS.md §1, add manually, or connect a
+              bank.
+            </p>
+            <SeedAccountsButton />
           </div>
         ) : (
           <table className="w-full text-sm">
