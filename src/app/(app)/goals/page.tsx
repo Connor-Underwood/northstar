@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { db, s } from "@/db";
 import { eq, asc } from "drizzle-orm";
+import { SeedGoalsButton } from "./seed-button";
 
 function fmt(cents: number) {
   return new Intl.NumberFormat("en-US", {
@@ -29,8 +30,11 @@ export default async function GoalsPage() {
 
       <div className="mt-8 space-y-3">
         {rows.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-6 text-sm text-zinc-500">
-            No goals seeded yet. Run the goal-seed script to populate from GOALS.md.
+          <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 p-6">
+            <p className="text-sm text-zinc-500 mb-4">
+              No goals yet. Seed the headline goals + milestone curve from GOALS.md.
+            </p>
+            <SeedGoalsButton />
           </div>
         ) : (
           rows.map((g) => {

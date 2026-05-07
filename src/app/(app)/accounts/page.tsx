@@ -1,6 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { db, s } from "@/db";
 import { eq, asc } from "drizzle-orm";
+import { ConnectBankButton } from "./connect-bank";
+import { SyncButton } from "./sync-button";
 
 function fmt(cents: number) {
   return new Intl.NumberFormat("en-US", {
@@ -28,13 +30,10 @@ export default async function AccountsPage() {
             Bank, credit, investment, and debt accounts.
           </p>
         </div>
-        <button
-          disabled
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white opacity-50 dark:bg-white dark:text-zinc-900"
-          title="Plaid integration coming next"
-        >
-          Connect bank
-        </button>
+        <div className="flex items-center gap-3">
+          <SyncButton />
+          <ConnectBankButton />
+        </div>
       </header>
 
       <div className="mt-8 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
