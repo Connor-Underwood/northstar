@@ -1,9 +1,8 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function SettingsPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
-  const user = await currentUser();
+  const user = await getCurrentUser();
+  if (!user) return null;
 
   return (
     <div className="max-w-2xl">
@@ -13,11 +12,11 @@ export default async function SettingsPage() {
         <h2 className="text-lg font-semibold">Account</h2>
         <dl className="mt-4 grid grid-cols-[120px_1fr] gap-y-2 text-sm">
           <dt className="text-zinc-500">Name</dt>
-          <dd>{user?.fullName ?? "—"}</dd>
+          <dd>{user.name ?? "—"}</dd>
           <dt className="text-zinc-500">Email</dt>
-          <dd>{user?.primaryEmailAddress?.emailAddress ?? "—"}</dd>
+          <dd>{user.email ?? "—"}</dd>
           <dt className="text-zinc-500">User ID</dt>
-          <dd className="font-mono text-xs">{userId}</dd>
+          <dd className="font-mono text-xs">{user.userId}</dd>
         </dl>
       </section>
 

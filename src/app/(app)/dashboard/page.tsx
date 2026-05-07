@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { db, s } from "@/db";
 import { eq, and, asc } from "drizzle-orm";
 import {
@@ -18,8 +18,9 @@ const fmt = (cents: number) =>
   }).format(cents / 100);
 
 export default async function DashboardPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const userId = user.userId;
 
   // Snapshot today (idempotent — one row per user per day).
   await snapshotToday(userId);

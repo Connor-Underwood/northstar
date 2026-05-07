@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { db, s } from "@/db";
 import { eq, asc } from "drizzle-orm";
 import { SeedGoalsButton } from "./seed-button";
@@ -12,8 +12,9 @@ function fmt(cents: number) {
 }
 
 export default async function GoalsPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const userId = user.userId;
 
   const rows = await db
     .select()

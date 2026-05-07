@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { db, s } from "@/db";
 import { eq, desc } from "drizzle-orm";
 
@@ -11,8 +11,9 @@ function fmt(cents: number) {
 }
 
 export default async function TransactionsPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const userId = user.userId;
 
   const rows = await db
     .select()

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, and } from "drizzle-orm";
@@ -22,8 +22,7 @@ function pickType(raw: FormDataEntryValue | null): AccountTypeValue {
 }
 
 export async function createAccountAction(formData: FormData) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const type = pickType(formData.get("type"));
   const name = String(formData.get("name") ?? "").trim();
@@ -47,8 +46,7 @@ export async function createAccountAction(formData: FormData) {
 }
 
 export async function updateAccountAction(id: string, formData: FormData) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const type = pickType(formData.get("type"));
   const name = String(formData.get("name") ?? "").trim();
@@ -75,8 +73,7 @@ export async function updateAccountAction(id: string, formData: FormData) {
 }
 
 export async function deleteAccountAction(id: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   await db
     .delete(s.accounts)
@@ -88,8 +85,7 @@ export async function deleteAccountAction(id: string) {
 }
 
 export async function seedAccountsAction() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const { SEED_ACCOUNTS } = await import("@/lib/account-seeds");
 

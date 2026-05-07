@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, and } from "drizzle-orm";
@@ -23,8 +23,7 @@ async function ensureUserOwnsAccount(userId: string, accountId: string) {
 }
 
 export async function createTransactionAction(formData: FormData) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const accountId = String(formData.get("accountId") ?? "");
   await ensureUserOwnsAccount(userId, accountId);
@@ -52,8 +51,7 @@ export async function updateTransactionAction(
   id: string,
   formData: FormData,
 ) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const accountId = String(formData.get("accountId") ?? "");
   await ensureUserOwnsAccount(userId, accountId);
@@ -80,8 +78,7 @@ export async function updateTransactionAction(
 }
 
 export async function deleteTransactionAction(id: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   await db
     .delete(s.transactions)

@@ -1,14 +1,15 @@
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { plaid } from "@/lib/plaid";
 import { decrypt } from "@/lib/encrypt";
 import { db, s } from "@/db";
 import { eq } from "drizzle-orm";
 
 export async function POST() {
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
+  const userId = user.userId;
 
   const items = await db
     .select()

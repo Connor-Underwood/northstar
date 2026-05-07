@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { plaid, mapPlaidAccountType } from "@/lib/plaid";
 import { encrypt } from "@/lib/encrypt";
 import { db, s } from "@/db";
@@ -6,10 +6,11 @@ import { CountryCode } from "plaid";
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
+    const user = await getCurrentUser();
+    if (!user) {
       return Response.json({ error: "unauthorized" }, { status: 401 });
     }
+    const userId = user.userId;
 
     const body = await req.json().catch(() => null);
     const publicToken = body?.public_token;

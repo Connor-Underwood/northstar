@@ -1,14 +1,13 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { db, s } from "@/db";
 import { eq } from "drizzle-orm";
 import { SEED_GOALS } from "@/lib/goal-seeds";
 
 export async function seedGoalsAction() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Not authenticated");
+  const { userId } = await requireUser();
 
   const existing = await db
     .select({ id: s.goals.id })

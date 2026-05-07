@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { eq, asc } from "drizzle-orm";
 import { db, s } from "@/db";
 import { TransactionForm } from "../transaction-form";
 import { createTransactionAction } from "../actions";
 
 export default async function NewTransactionPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const userId = user.userId;
 
   const accounts = await db
     .select({ id: s.accounts.id, name: s.accounts.name })
