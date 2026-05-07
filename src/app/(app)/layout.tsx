@@ -16,7 +16,7 @@ export default function AppLayout({
     <div className="flex flex-1">
       <aside className="hidden md:flex w-64 flex-col border-r border-zinc-200 dark:border-zinc-800 px-4 py-6">
         <Link href="/dashboard" className="mb-8 px-2 text-lg font-semibold tracking-tight">
-          Get Rich Quick
+          Northstar
         </Link>
         <nav className="flex flex-col gap-1">
           {navItems.map((item) => (

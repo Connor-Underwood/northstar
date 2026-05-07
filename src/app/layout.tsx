@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Get Rich Quick",
+  title: "Northstar",
   description: "Personal finance tracker — debt-free EOY 2026, $1M by 30.",
 };
 
