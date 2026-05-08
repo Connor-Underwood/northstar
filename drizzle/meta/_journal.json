@@ -8,6 +8,13 @@
       "when": 1778172969897,
       "tag": "0000_mushy_skrulls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778250845219,
+      "tag": "0001_living_malice",
+      "breakpoints": true
     }
   ]
 }

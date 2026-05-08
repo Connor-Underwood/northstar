@@ -6,6 +6,7 @@ const PROTECTED = [
   /^\/dashboard/,
   /^\/accounts/,
   /^\/transactions/,
+  /^\/spending/,
   /^\/goals/,
   /^\/settings/,
   /^\/api\/plaid/,

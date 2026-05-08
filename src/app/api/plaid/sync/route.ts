@@ -3,6 +3,7 @@ import { plaid } from "@/lib/plaid";
 import { decrypt } from "@/lib/encrypt";
 import { db, s } from "@/db";
 import { eq } from "drizzle-orm";
+import { mapPlaidCategoryToLocal } from "@/lib/category-seeds";
 
 export async function POST() {
   const user = await getCurrentUser();
@@ -34,6 +35,14 @@ export async function POST() {
       .map((a) => [a.plaidAccountId as string, a.id]),
   );
 
+  // Build a name → category id map so we can auto-assign categoryId on insert.
+  // Empty if user hasn't seeded categories yet — they can recategorize later.
+  const userCategories = await db
+    .select({ id: s.categories.id, name: s.categories.name })
+    .from(s.categories)
+    .where(eq(s.categories.userId, userId));
+  const catByName = new Map(userCategories.map((c) => [c.name, c.id]));
+
   let added = 0;
   let modified = 0;
   let removed = 0;
@@ -52,6 +61,10 @@ export async function POST() {
       for (const t of res.data.added) {
         const accId = accIdMap.get(t.account_id);
         if (!accId) continue;
+        const primary = t.personal_finance_category?.primary ?? null;
+        const detailed = t.personal_finance_category?.detailed ?? null;
+        const localName = mapPlaidCategoryToLocal(primary, detailed);
+        const categoryId = catByName.get(localName) ?? null;
         await db
           .insert(s.transactions)
           .values({
@@ -62,6 +75,9 @@ export async function POST() {
             amountCents: -Math.round(t.amount * 100),
             description: t.name,
             merchant: t.merchant_name ?? null,
+            categoryId,
+            plaidCategoryPrimary: primary,
+            plaidCategoryDetailed: detailed,
             isPending: t.pending,
             plaidTransactionId: t.transaction_id,
           })

@@ -119,6 +119,8 @@ export const transactions = pgTable(
     notes: text("notes"),
     isPending: boolean("is_pending").notNull().default(false),
     plaidTransactionId: text("plaid_transaction_id"),
+    plaidCategoryPrimary: text("plaid_category_primary"),
+    plaidCategoryDetailed: text("plaid_category_detailed"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
