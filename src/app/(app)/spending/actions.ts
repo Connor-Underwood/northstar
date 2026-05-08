@@ -9,6 +9,17 @@ import {
   mapPlaidCategoryToLocal,
 } from "@/lib/category-seeds";
 
+export async function resetPlaidCursorsAction() {
+  const { userId } = await requireUser();
+  const updated = await db
+    .update(s.plaidItems)
+    .set({ cursor: null })
+    .where(eq(s.plaidItems.userId, userId))
+    .returning({ id: s.plaidItems.id });
+  revalidatePath("/spending");
+  return { ok: true as const, items: updated.length };
+}
+
 export async function seedCategoriesAction() {
   const { userId } = await requireUser();
 

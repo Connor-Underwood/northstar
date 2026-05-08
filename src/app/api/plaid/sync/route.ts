@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { plaid } from "@/lib/plaid";
 import { decrypt } from "@/lib/encrypt";
 import { db, s } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { mapPlaidCategoryToLocal } from "@/lib/category-seeds";
 
 export async function POST() {
@@ -81,8 +81,16 @@ export async function POST() {
             isPending: t.pending,
             plaidTransactionId: t.transaction_id,
           })
-          .onConflictDoNothing({
+          .onConflictDoUpdate({
             target: s.transactions.plaidTransactionId,
+            // Backfill Plaid metadata onto rows synced before we tracked it.
+            // Don't clobber existing categoryId if user has manually set it.
+            set: {
+              plaidCategoryPrimary: primary,
+              plaidCategoryDetailed: detailed,
+              categoryId: sql`COALESCE(${s.transactions.categoryId}, ${categoryId})`,
+              isPending: t.pending,
+            },
           });
       }
 
