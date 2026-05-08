@@ -3,24 +3,26 @@
 import { requireUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { db, s } from "@/db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { SEED_GOALS } from "@/lib/goal-seeds";
 
+/** Idempotent: inserts only goals whose name doesn't already exist for the user. */
 export async function seedGoalsAction() {
   const { userId } = await requireUser();
 
   const existing = await db
-    .select({ id: s.goals.id })
+    .select({ name: s.goals.name })
     .from(s.goals)
-    .where(eq(s.goals.userId, userId))
-    .limit(1);
+    .where(eq(s.goals.userId, userId));
+  const existingNames = new Set(existing.map((g) => g.name));
 
-  if (existing.length > 0) {
-    return { ok: false, reason: "already_seeded" as const };
+  const toInsert = SEED_GOALS.filter((g) => !existingNames.has(g.name));
+  if (toInsert.length === 0) {
+    return { ok: true as const, added: 0 };
   }
 
   await db.insert(s.goals).values(
-    SEED_GOALS.map((g) => ({
+    toInsert.map((g) => ({
       userId,
       type: g.type,
       name: g.name,
@@ -32,5 +34,40 @@ export async function seedGoalsAction() {
 
   revalidatePath("/goals");
   revalidatePath("/dashboard");
-  return { ok: true, count: SEED_GOALS.length };
+  return { ok: true as const, added: toInsert.length };
+}
+
+export async function markGoalAchievedAction(goalId: string) {
+  const { userId } = await requireUser();
+  await db
+    .update(s.goals)
+    .set({ status: "achieved", updatedAt: new Date() })
+    .where(and(eq(s.goals.id, goalId), eq(s.goals.userId, userId)));
+  revalidatePath("/goals");
+  revalidatePath("/dashboard");
+  return { ok: true as const };
+}
+
+export async function reactivateGoalAction(goalId: string) {
+  const { userId } = await requireUser();
+  await db
+    .update(s.goals)
+    .set({ status: "active", updatedAt: new Date() })
+    .where(and(eq(s.goals.id, goalId), eq(s.goals.userId, userId)));
+  revalidatePath("/goals");
+  return { ok: true as const };
+}
+
+export async function updateGoalProgressAction(
+  goalId: string,
+  newAmountCents: number,
+) {
+  const { userId } = await requireUser();
+  await db
+    .update(s.goals)
+    .set({ currentAmountCents: newAmountCents, updatedAt: new Date() })
+    .where(and(eq(s.goals.id, goalId), eq(s.goals.userId, userId)));
+  revalidatePath("/goals");
+  revalidatePath("/dashboard");
+  return { ok: true as const };
 }

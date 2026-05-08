@@ -79,4 +79,48 @@ export const SEED_GOALS: SeedGoal[] = [
     targetDate: "2032-12-31",
     notes: null,
   },
+
+  // Tactical wealth-building goals (selected 2026-05-08)
+  {
+    type: "savings_target",
+    name: "Emergency fund: $15k in HYSA",
+    targetAmountCents: dollars(15_000),
+    targetDate: "2026-12-31",
+    notes: "3 months of SF expenses. After debt-free, this is the next priority before taxable investing.",
+  },
+  {
+    type: "savings_target",
+    name: "Capture full 401(k) match from paycheck #1",
+    targetAmountCents: null,
+    targetDate: "2026-08-12",
+    notes: "Free ~$7k/yr from Google. Must elect contribution % BEFORE first paycheck. Pass/fail goal.",
+  },
+  {
+    type: "savings_target",
+    name: "Roth IRA 2026 max ($7,000)",
+    targetAmountCents: dollars(7_000),
+    targetDate: "2027-04-15",
+    notes: "Tax-free growth forever. 2026 contribution deadline is tax day 2027.",
+  },
+  {
+    type: "savings_target",
+    name: "Mega backdoor Roth: $30k+ in 2026",
+    targetAmountCents: dollars(30_000),
+    targetDate: "2026-12-31",
+    notes: "Google plan supports after-tax contributions + in-plan conversion. Biggest wealth lever for L3+ Google SWEs. Requires HR setup of after-tax election.",
+  },
+  {
+    type: "custom",
+    name: "Promotion to L4 by EOY 2027",
+    targetAmountCents: null,
+    targetDate: "2027-12-31",
+    notes: "Typical L3→L4 cadence is 18-24 months. Drives comp growth which feeds every other goal.",
+  },
+  {
+    type: "savings_target",
+    name: "Savings rate ≥ 40% of net comp in 2026",
+    targetAmountCents: 4000, // basis points: 4000 = 40.00%
+    targetDate: "2026-12-31",
+    notes: "Behavioral lever. Computed monthly: (income - spending) / income. targetAmountCents stores basis points (4000 = 40%) since this is a rate not a dollar amount.",
+  },
 ];

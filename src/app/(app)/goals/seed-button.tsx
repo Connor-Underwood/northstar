@@ -1,28 +1,35 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { seedGoalsAction } from "./actions";
 
 export function SeedGoalsButton() {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
 
   return (
-    <div>
+    <div className="flex items-center gap-3">
       <button
         onClick={() => {
-          setError(null);
+          setMsg(null);
           startTransition(async () => {
-            const result = await seedGoalsAction();
-            if (!result.ok) setError("Goals are already seeded.");
+            const res = await seedGoalsAction();
+            setMsg(
+              res.added === 0
+                ? "All goals already present."
+                : `Added ${res.added} new goals from GOALS.md.`,
+            );
+            router.refresh();
           });
         }}
         disabled={pending}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-white dark:text-zinc-900"
       >
         {pending ? "Seeding…" : "Seed goals from GOALS.md"}
       </button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {msg && <p className="text-sm text-zinc-500">{msg}</p>}
     </div>
   );
 }
